@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HagenAcademy · Terminal Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{cyber:{bg:'#070a12',card:'#0d1322',border:'#1a243a',hover:'#151e33',green:'#00ff88',red:'#ff3366',cyan:'#00e5ff',text:'#8294ad',bright:'#f8fafc'}},fontFamily:{sans:['Inter','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>:root{--bg:#030509;--panel-bg:rgba(10,15,26,.92);--gold:#00ff66;--up:#00ff66;--down:#ff0055;--muted:#64748b;
+--line:rgba(0,255,102,.25);--grid:rgba(255,255,255,.05);--neon-green:#00ff66;--neon-green-glow:rgba(0,255,102,.35);
+--neon-red:#ff0055;--neon-red-glow:rgba(255,0,85,.35);--neon-cyan:#00f3ff;--text-main:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background-color:var(--bg);
+background-image:radial-gradient(circle at 15% 15%,rgba(0,255,102,.05) 0%,transparent 40%),radial-gradient(circle at 85% 85%,rgba(255,0,85,.05) 0%,transparent 40%),linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+background-size:100% 100%,100% 100%,30px 30px,30px 30px;color:var(--text-main);font-family:'JetBrains Mono',monospace;padding:20px 10px;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto}
+header{text-align:center;margin-bottom:26px}
+h1{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;letter-spacing:2px;color:#fff;text-shadow:0 0 10px var(--neon-green),0 0 20px var(--neon-green-glow);text-transform:uppercase}
+.brand{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--neon-cyan);text-shadow:0 0 5px rgba(0,243,255,.5);margin-bottom:6px}
+.subtitle{color:var(--neon-cyan);font-size:.78rem;letter-spacing:3px;text-transform:uppercase;margin-top:6px;text-shadow:0 0 5px rgba(0,243,255,.5)}
+.sub{color:var(--muted);font-size:.75rem;max-width:80ch;margin:10px auto 0}
+.cyber-panel{background:var(--panel-bg);border:1px solid rgba(0,255,102,.3);border-radius:8px;padding:20px;margin-bottom:22px;backdrop-filter:blur(10px);box-shadow:0 0 15px rgba(0,0,0,.7),inset 0 0 15px rgba(0,255,102,.05);position:relative;clip-path:polygon(0 0,calc(100% - 15px) 0,100% 15px,100% 100%,15px 100%,0 calc(100% - 15px))}
+.cyber-panel::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
+.panel-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--neon-green);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;text-shadow:0 0 8px var(--neon-green-glow)}
+.phint{color:var(--muted);font-size:.72rem;margin:0 0 6px}
+.controls{display:flex;flex-wrap:wrap;gap:15px;align-items:flex-end;margin-top:6px}
+.controls label{font-size:.7rem;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px;display:flex;flex-direction:column;gap:6px}
+select,input{background:#060a12;border:1px solid rgba(0,255,102,.4);color:#fff;padding:9px 12px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.85rem;outline:none;transition:all .2s ease}
+select:focus,input:focus{border-color:var(--neon-green);box-shadow:0 0 10px var(--neon-green-glow)}
+input[type=number]{width:150px}
+button{background:rgba(0,255,102,.08);border:1px solid var(--neon-green);color:var(--neon-green);padding:8px 14px;font-family:'Orbitron',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;border-radius:4px;cursor:pointer;transition:all .2s ease;box-shadow:0 0 5px var(--neon-green-glow)}
+button:hover{background:var(--neon-green);color:#000;box-shadow:0 0 15px var(--neon-green)}
+button.ghost{border-color:rgba(0,243,255,.5);color:var(--neon-cyan);background:rgba(0,243,255,.06);box-shadow:0 0 5px rgba(0,243,255,.2)}
+button.ghost:hover{background:var(--neon-cyan);color:#000;box-shadow:0 0 15px var(--neon-cyan)}
+button.on{background:var(--neon-green);color:#000}
+button.rm{border-color:var(--neon-red);color:var(--neon-red);background:rgba(255,0,85,.08);box-shadow:0 0 5px var(--neon-red-glow);padding:8px 12px}
+button.rm:hover{background:var(--neon-red);color:#fff}
+.assetrow{display:grid;grid-template-columns:1fr 110px 45px;gap:10px;align-items:center;margin-bottom:10px;max-width:520px}
+.sumbar{height:8px;background:#0f172a;border:1px solid rgba(0,255,102,.3);border-radius:4px;overflow:hidden;margin-top:12px;max-width:520px}
+.sumbar i{display:block;height:100%;width:0%;background:var(--neon-green);box-shadow:0 0 10px var(--neon-green);transition:width .3s,background .3s}
+.msg{padding:10px 14px;border-radius:4px;background:#020408;border:1px solid #1e293b;color:var(--muted);max-width:680px;margin-top:10px;font-size:.75rem}
+.msg.bad{border-color:var(--neon-red);color:var(--neon-red);text-shadow:0 0 5px var(--neon-red-glow)}
+.msg.good{border-color:var(--neon-green);color:var(--neon-green);text-shadow:0 0 5px var(--neon-green-glow)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:22px}
+.tile{background:#060a12;border:1px solid rgba(0,243,255,.2);border-radius:6px;padding:15px}
+.tile .k{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.tile .v{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+.tile .v.up{color:var(--neon-green);text-shadow:0 0 10px var(--neon-green-glow)}
+.tile .v.down{color:var(--neon-red);text-shadow:0 0 10px var(--neon-red-glow)}
+.tile .s{font-size:.68rem;color:var(--muted);margin-top:4px}
+.tile.hero{border-color:var(--neon-green);box-shadow:0 0 12px rgba(0,255,102,.15),inset 0 0 12px rgba(0,255,102,.05)}
+.chartbox{position:relative;height:380px;margin-top:12px}
+.chartbox.short{height:300px}
+.row2,.row3{display:grid;gap:0;grid-template-columns:1fr}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{font-family:'Orbitron',sans-serif;color:var(--neon-cyan);padding:10px;border-bottom:1px solid rgba(0,243,255,.3);text-transform:uppercase;letter-spacing:1px;text-align:right;font-size:.65rem}
+td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+tr:hover td{background:rgba(0,255,102,.03)}
+tr.hl td{background:rgba(0,255,102,.07)}
+tfoot td{font-weight:800;border-top:2px solid var(--neon-green);color:#fff}
+.pill{font-size:.6rem;border:1px solid rgba(0,243,255,.4);border-radius:20px;padding:2px 8px;color:var(--neon-cyan)}
+.foot{font-size:.7rem;color:var(--muted);max-width:94ch}
+.hidden{display:none!important}
+.up{color:var(--neon-green)}.down{color:var(--neon-red)}
+.loading-overlay{text-align:center;padding:40px;font-family:'Orbitron',sans-serif;color:var(--neon-green);font-size:.95rem;letter-spacing:2px;text-shadow:0 0 10px var(--neon-green-glow)}
+.spinner{display:inline-block;width:30px;height:30px;border:3px solid rgba(0,255,102,.3);border-radius:50%;border-top-color:var(--neon-green);animation:spin 1s ease-in-out infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(min-width:900px){.row2{grid-template-columns:1fr 1fr;gap:22px}.row3{grid-template-columns:1fr 1fr 1fr;gap:22px}}
+@media(max-width:600px){h1{font-size:1.35rem}.cyber-panel{padding:15px}.assetrow{grid-template-columns:1fr 80px 42px}.chartbox{height:260px}.chartbox.short{height:240px}}
+/* ===== overrides estética DeepSeek ===== */
+:root{--bg:#070a12;--panel-bg:#0d1322;--gold:#00ff88;--up:#00ff88;--down:#ff3366;--muted:#8294ad;--neon-green:#00ff88;--neon-green-glow:rgba(0,255,136,.35);--neon-red:#ff3366;--neon-red-glow:rgba(255,51,102,.35);--neon-cyan:#00e5ff;--text-main:#e2e8f0;--panel:#0d1322;--line:rgba(0,255,136,.22)}
+body{font-family:'Inter',sans-serif;background:#070a12;background-image:none}
+.wrap{font-family:'JetBrains Mono',monospace}
+.font-mono-val{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#070a12}::-webkit-scrollbar-thumb{background:#1a243a;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#00ff88}
+.ticker-tape{background:#050810;border:1px solid #1a243a;border-radius:8px;overflow:hidden;position:relative}
+.ticker-tape::before,.ticker-tape::after{content:'';position:absolute;top:0;bottom:0;width:40px;z-index:2;pointer-events:none}
+.ticker-tape::before{left:0;background:linear-gradient(90deg,#050810,transparent)}
+.ticker-tape::after{right:0;background:linear-gradient(270deg,#050810,transparent)}
+.ticker-tape-inner{display:inline-flex;gap:2rem;padding:8px 0;animation:scroll 90s linear infinite;white-space:nowrap}
+.ticker-tape:hover .ticker-tape-inner{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tape-item{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:opacity .2s}
+.tape-item:hover{opacity:.7}
+.tape-sym{font-weight:700;color:#f8fafc}.tape-price{color:#8294ad}
+.tape-chg.up{color:#00ff88}.tape-chg.down{color:#ff3366}
+.period-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid transparent;color:#8294ad;transition:.2s;cursor:pointer;font-family:'JetBrains Mono',monospace}
+.period-btn:hover{color:#f8fafc;background:#151e33}
+.period-btn.active{background:rgba(0,255,136,.15);color:#00ff88;border-color:rgba(0,255,136,.4)}
+.gauge-container{position:relative;width:160px;height:80px}
+.gauge-bg{fill:none;stroke:#1a243a;stroke-width:12}
+.gauge-fill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke .5s ease}
+.sent-bar{height:6px;border-radius:3px;background:#1a243a;overflow:hidden}
+.sent-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.target-bar{position:relative;height:8px;background:linear-gradient(90deg,#ff3366 0%,#ffb020 50%,#00ff88 100%);border-radius:4px}
+.target-marker{position:absolute;top:-4px;width:4px;height:16px;background:#f8fafc;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 6px rgba(248,250,252,.7)}
+.sbadge{font-size:9px;padding:1px 6px;border-radius:999px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.sbadge.bull{background:rgba(0,255,136,.15);color:#00ff88;border:1px solid rgba(0,255,136,.3)}
+.sbadge.bear{background:rgba(255,51,102,.15);color:#ff3366;border:1px solid rgba(255,51,102,.3)}
+.sbadge.neut{background:rgba(148,163,184,.15);color:#8294ad;border:1px solid rgba(148,163,184,.3)}
+.demo-badge{font-size:9px;padding:1px 7px;border-radius:999px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:rgba(255,176,32,.15);color:#ffb020;border:1px solid rgba(255,176,32,.35)}
+</style>
+</head>
+<body class="p-2 md:p-4 min-h-screen">
+
+<div class="max-w-7xl mx-auto w-full flex flex-col gap-3" id="terminal-section">
+  <header class="bg-cyber-card border border-cyber-border rounded-xl p-4 flex flex-wrap justify-between items-center gap-4" style="box-shadow:0 0 15px rgba(0,255,136,.12)">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-cyber-green/10 border border-cyber-green/40 flex items-center justify-center text-cyber-green font-bold text-xl font-mono">HA</div>
+      <div>
+        <h1 class="font-bold tracking-wide flex items-center gap-2" style="color:#f8fafc;font-size:1.15rem">HAGENACADEMY <span class="text-xs px-2 py-0.5 rounded bg-cyber-green/20 text-cyber-green border border-cyber-green/30 uppercase tracking-widest font-mono">Terminal Pro</span></h1>
+        <p class="text-xs text-cyber-text">Terminal en vivo vía Stooq (~15 min demora) · Simulador con tu Excel 1-jun → 20-oct-2026</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-cyber-text font-mono uppercase">Ticker:</span>
+      <select id="tickerSelect" onchange="selTicker(this.value)" class="bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-cyber-bright font-mono-val font-bold text-sm focus:outline-none cursor-pointer" style="border-color:#1a243a">
+        <option value="META">META</option><option value="VOO">VOO</option><option value="QQQ">QQQ</option><option value="VXUS">VXUS</option><option value="AAPL">AAPL</option><option value="NVDA">NVDA</option><option value="PLTR">PLTR</option><option value="SNAP">SNAP</option><option value="NFLX">NFLX</option><option value="MSFT">MSFT</option><option value="TSLA">TSLA</option><option value="AVGO">AVGO</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="ticker-tape"><div class="ticker-tape-inner" id="tickerTape"></div></div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+    <div class="lg:col-span-8 flex flex-col gap-3">
+      <div class="bg-cyber-card border border-cyber-border rounded-xl overflow-hidden">
+        <div class="p-5 pb-3">
+          <div class="flex flex-wrap justify-between items-start gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <h2 id="tName" class="text-2xl font-bold text-cyber-bright tracking-tight">—</h2>
+                <span id="tExchange" class="text-xs px-2 py-0.5 rounded bg-cyber-border text-cyber-text font-mono">—</span>
+                <span id="liveBadge" class="text-xs px-2 py-0.5 rounded bg-cyber-border text-cyber-text border border-cyber-border font-mono">CONECTANDO…</span>
+              </div>
+              <p class="text-xs text-cyber-text">Precios de cierre · Sin comisiones ni dividendos · Ejercicio educativo</p>
+            </div>
+            <div class="text-right">
+              <div id="tPrice" class="text-3xl font-bold font-mono-val text-cyber-bright">$0.00</div>
+              <div id="tChange" class="text-sm font-semibold font-mono-val text-cyber-red flex items-center justify-end gap-1">—</div>
+              <div class="text-[11px] text-cyber-text font-mono mt-0.5">Último cierre disponible</div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-2">
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <div class="flex bg-cyber-bg p-1 rounded-lg border border-cyber-border gap-0.5">
+              <button onclick="setPeriod('1M')" data-p="1M" class="period-btn">1M</button>
+              <button onclick="setPeriod('3M')" data-p="3M" class="period-btn">3M</button>
+              <button onclick="setPeriod('ALL')" data-p="ALL" class="period-btn active">TODO</button>
+            </div>
+            <span id="periodReturn" class="text-xs font-mono-val font-semibold text-cyber-green"></span>
+          </div>
+          <div class="relative w-full h-64"><canvas id="priceChart"></canvas></div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 px-5 py-4 border-t border-cyber-border/60 text-xs">
+          <div><span class="text-cyber-text block">Volatilidad diaria</span><span id="statVol" class="text-cyber-bright font-mono-val font-semibold">—</span></div>
+          <div><span class="text-cyber-text block">Máximo en datos</span><span id="statMax" class="text-cyber-bright font-mono-val font-semibold">—</span></div>
+          <div><span class="text-cyber-text block">Mínimo en datos</span><span id="statMin" class="text-cyber-bright font-mono-val font-semibold">—</span></div>
+          <div><span class="text-cyber-text block">Drawdown máx.</span><span id="statDD" class="text-cyber-red font-mono-val font-semibold">—</span></div>
+        </div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <div class="flex justify-between items-center flex-wrap gap-2">
+          <div><h3 class="text-base font-bold text-cyber-bright flex items-center gap-2"><i class="fa-solid fa-chart-column text-cyber-green"></i> Beneficios Trimestrales <span class="demo-badge">Demo</span></h3>
+          <p class="text-xs text-cyber-text">Resultado Real vs Estimación — conexión a API después</p></div>
+          <div class="flex bg-cyber-bg p-1 rounded-lg border border-cyber-border text-xs">
+            <button id="btn-quarterly" onclick="setEarnP('quarterly')" class="px-2.5 py-1 rounded-md text-cyber-bright bg-cyber-border font-medium">Trimestral</button>
+            <button id="btn-annual" onclick="setEarnP('annual')" class="px-2.5 py-1 rounded-md text-cyber-text hover:text-cyber-bright transition">Anual</button>
+          </div>
+        </div>
+        <div class="relative w-full h-56"><canvas id="earningsChart"></canvas></div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <div><h3 class="text-base font-bold text-cyber-bright flex items-center gap-2"><i class="fa-solid fa-vault text-cyber-cyan"></i> Ingresos vs Beneficio Neto <span class="demo-badge">Demo</span></h3>
+        <p class="text-xs text-cyber-text">Evolución anual ($B) — conexión a API después</p></div>
+        <div class="relative w-full h-56"><canvas id="financialsChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-4 flex flex-col gap-3">
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-cyber-bright uppercase tracking-wider border-b border-cyber-border pb-2 flex items-center justify-between"><span>Estadísticas (datos reales)</span><i class="fa-solid fa-list-check text-cyber-green"></i></h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between"><span class="text-cyber-text">Precio inicio (1-jun)</span><span id="statPStart" class="text-cyber-bright font-mono-val font-medium">—</span></div>
+          <div class="flex justify-between"><span class="text-cyber-text">Máximo en datos</span><span id="statPMax" class="text-cyber-bright font-mono-val font-medium">—</span></div>
+          <div class="flex justify-between"><span class="text-cyber-text">Mínimo en datos</span><span id="statPMin" class="text-cyber-bright font-mono-val font-medium">—</span></div>
+          <div class="flex justify-between"><span class="text-cyber-text">Rend. acumulado</span><span id="statRet" class="font-mono-val font-medium">—</span></div>
+          <div class="flex justify-between"><span class="text-cyber-text">Días de datos</span><span id="statDays" class="text-cyber-bright font-mono-val font-medium">—</span></div>
+          <div class="flex justify-between"><span class="text-cyber-text">Último cierre</span><span id="statLastDate" class="text-cyber-bright font-mono-val font-medium">—</span></div>
+        </div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col items-center text-center gap-3">
+        <h3 class="text-xs font-bold text-cyber-bright uppercase tracking-wider w-full text-left border-b border-cyber-border pb-2 flex items-center justify-between"><span>Análisis Técnico</span><i class="fa-solid fa-compass text-cyber-cyan"></i></h3>
+        <div class="gauge-container mt-1">
+          <svg class="w-full h-full" viewBox="0 0 100 50">
+            <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50"></path>
+            <path id="gaugePath" class="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" stroke="#00ff88" stroke-dasharray="126" stroke-dashoffset="30"></path>
+          </svg>
+          <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 font-bold font-mono-val text-xs text-cyber-green" id="gaugeValueText">—</div>
+        </div>
+        <p class="text-[11px] text-cyber-text px-2">Calculado con medias móviles 20/50 y momentum sobre tus cierres reales.</p>
+        <div class="grid grid-cols-3 w-full text-center text-xs border-t border-cyber-border/40 pt-3">
+          <div><span class="block text-cyber-red font-bold">Venta</span><span id="techSellCount" class="text-cyber-bright font-mono-val">—</span></div>
+          <div><span class="block text-cyber-text font-bold">Neutro</span><span id="techNeutralCount" class="text-cyber-bright font-mono-val">—</span></div>
+          <div><span class="block text-cyber-green font-bold">Compra</span><span id="techBuyCount" class="text-cyber-bright font-mono-val">—</span></div>
+        </div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-cyber-bright uppercase tracking-wider border-b border-cyber-border pb-2 flex items-center justify-between"><span>Consenso de Analistas</span><span class="demo-badge">Demo</span></h3>
+        <div class="flex items-center justify-between">
+          <div><div id="analystRating" class="text-lg font-bold text-cyber-green">—</div><div id="analystCount" class="text-[11px] text-cyber-text font-mono">—</div></div>
+          <div class="text-right"><div id="analystUpside" class="text-lg font-bold font-mono-val text-cyber-green">—</div><div class="text-[11px] text-cyber-text">al precio objetivo</div></div>
+        </div>
+        <div class="flex gap-0.5 h-2 rounded overflow-hidden">
+          <div id="distBuy" class="bg-cyber-green" style="width:60%"></div><div id="distHold" class="bg-cyber-cyan" style="width:25%"></div><div id="distSell" class="bg-cyber-red" style="width:15%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-mono">
+          <span class="text-cyber-green">Compra <span id="countBuy">—</span></span><span class="text-cyber-cyan">Mantener <span id="countHold">—</span></span><span class="text-cyber-red">Venta <span id="countSell">—</span></span>
+        </div>
+        <div class="pt-2 border-t border-cyber-border/60">
+          <div class="flex justify-between text-[10px] font-mono text-cyber-text mb-1">
+            <span>Bajo <span id="targetLow" class="text-cyber-bright font-semibold">—</span></span>
+            <span>Medio <span id="targetAvg" class="text-cyber-bright font-semibold">—</span></span>
+            <span>Alto <span id="targetHigh" class="text-cyber-bright font-semibold">—</span></span>
+          </div>
+          <div class="target-bar"><div id="currentMarker" class="target-marker" style="left:50%"></div></div>
+          <div class="text-[10px] text-cyber-text text-center mt-1 font-mono">Precio actual <span id="targetCurrent" class="text-cyber-bright font-semibold">—</span></div>
+        </div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-cyber-bright uppercase tracking-wider border-b border-cyber-border pb-2 flex items-center justify-between"><span>Sentimiento Social</span><span class="demo-badge">Demo</span></h3>
+        <div class="flex items-center justify-between">
+          <div><div class="flex items-baseline gap-1"><span id="socialScore" class="text-3xl font-bold font-mono-val text-cyber-green">—</span><span class="text-xs text-cyber-text">/100</span></div><div class="text-[11px] font-semibold text-cyber-green" id="socialLabel">—</div></div>
+          <div class="text-right"><div id="mentions24h" class="text-sm font-bold font-mono-val text-cyber-bright">—</div><div class="text-[10px] text-cyber-text">menciones 24h</div><div id="mentionsTrend" class="text-[10px] font-mono-val text-cyber-green">—</div></div>
+        </div>
+        <div class="space-y-2 pt-2 border-t border-cyber-border/60">
+          <div><div class="flex justify-between text-[10px] mb-1"><span class="text-cyber-text">Reddit</span><span id="score0" class="font-mono-val text-cyber-bright">—</span></div><div class="sent-bar"><div id="bar0" class="sent-bar-fill bg-cyber-green" style="width:80%"></div></div></div>
+          <div><div class="flex justify-between text-[10px] mb-1"><span class="text-cyber-text">X / Twitter</span><span id="score1" class="font-mono-val text-cyber-bright">—</span></div><div class="sent-bar"><div id="bar1" class="sent-bar-fill bg-cyber-cyan" style="width:70%"></div></div></div>
+          <div><div class="flex justify-between text-[10px] mb-1"><span class="text-cyber-text">Noticias</span><span id="score2" class="font-mono-val text-cyber-bright">—</span></div><div class="sent-bar"><div id="bar2" class="sent-bar-fill bg-cyber-cyan" style="width:70%"></div></div></div>
+        </div>
+        <div class="pt-2 border-t border-cyber-border/60"><div class="text-[10px] text-cyber-text mb-1.5 uppercase tracking-wide">Temas Trending</div><div id="topTopics" class="flex flex-wrap gap-1.5"></div></div>
+        <div class="pt-2 border-t border-cyber-border/60"><div class="text-[10px] text-cyber-text mb-1.5 uppercase tracking-wide">Posts Recientes</div><div id="socialPosts" class="space-y-2"></div></div>
+      </div>
+
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-cyber-bright uppercase tracking-wider border-b border-cyber-border pb-2 flex items-center justify-between"><span>Noticias Relevantes</span><span class="demo-badge">Demo</span></h3>
+        <div id="newsContainer" class="space-y-2.5"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" style="max-width:1100px;margin:34px auto 0">
+<section class="cyber-panel" style="background:#0d1322;border-color:#1a243a;box-shadow:none;clip-path:none">
+<div class="panel-title"><i class="fa-solid fa-wallet"></i> SIMULADOR DE PORTAFOLIOS <span style="font-size:.6em;color:#00e5ff">· DATOS REALES DE TU EXCEL</span></div>
+<p class="phint" style="color:#8294ad">El motor probado (13/13): pesos 100% libres, cualquier capital, cualquier fecha de entrada, 6 gráficas y comparador. Todo se recalcula al instante.</p>
+</section>
+<section class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-sliders"></i> 1. Tu capital y tu fecha</div>
+<div class="controls">
+<label>Capital a simular (USD)<input type="number" id="capital" value="1000" min="1" step="50"></label>
+<label>Fecha de entrada<select id="start"></select></label>
+<label>Comparar contra<select id="bench"><option value="">Nada</option></select></label>
+</div>
+</section>
+<section class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-cubes"></i> 2. Tu portafolio · pesos libres</div>
+<p class="phint">Los pesos los decides tú: divide como quieras. La suma debe dar exactamente 100%.</p>
+<div class="controls" style="margin-bottom:12px">
+<span style="font-size:.68rem;color:var(--muted);font-weight:700">PLANTILLAS:</span>
+<button type="button" class="ghost" data-preset="core">Núcleo 70/30</button>
+<button type="button" class="ghost" data-preset="tech">Tech 4×25</button>
+<button type="button" class="ghost" data-preset="voo">Solo VOO</button>
+<button type="button" id="addAsset"><i class="fa-solid fa-plus"></i> Añadir</button>
+</div>
+<div id="assetList"></div>
+<div style="margin-top:4px;font-size:.78rem"><b>SUMA DE PESOS: <span id="sumW">0</span>%</b> (objetivo: 100%)</div>
+<div class="sumbar"><i id="sumFill"></i></div>
+<div id="sumMsg" class="msg"></div>
+</section>
+<div id="results">
+<section class="tiles" id="tiles"></section>
+<section class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-chart-area"></i> 3. Tu inversión día a día</div>
+<p class="phint" id="chartNote"></p>
+<div class="chartbox"><canvas id="lineChart"></canvas></div>
+</section>
+<section class="row2">
+<div class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-arrow-trend-down"></i> 4. El camino duele: drawdown</div>
+<p class="phint">Caída desde el pico, día a día. La zona profunda es lo que habrías visto en rojo antes del final feliz.</p>
+<div class="chartbox short"><canvas id="ddChart"></canvas></div>
+</div>
+<div class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-layer-group"></i> 5. Quién jaló y quién frenó</div>
+<p class="phint">Rendimiento acumulado de cada activo (%) desde tu fecha de entrada.</p>
+<div class="chartbox short"><canvas id="assetChart"></canvas></div>
+</div>
+</section>
+<section class="row3">
+<div class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-scale-balanced"></i> 6. Plan vs. realidad</div>
+<p class="phint">Peso al entrar vs. peso real de hoy (lo que sube "engorda" solo).</p>
+<div class="chartbox short"><canvas id="driftChart"></canvas></div>
+</div>
+<div class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-dollar-sign"></i> 7. Aporte en dólares</div>
+<p class="phint">Cuánto ganó o perdió cada posición sobre tu capital.</p>
+<div class="chartbox short"><canvas id="contribChart"></canvas></div>
+</div>
+<div class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-circle-half-stroke"></i> 8. Días verde / rojo</div>
+<p class="phint" id="pieDNote"></p>
+<div class="chartbox short"><canvas id="pieD"></canvas></div>
+</div>
+</section>
+<section class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-list-check"></i> 9. Qué aportó cada activo</div>
+<p class="phint">Resaltada: la posición que más jaló el portafolio.</p>
+<div class="table-scroll"><table id="assetTable"></table></div>
+</section>
+<section class="cyber-panel">
+<div class="controls" style="justify-content:space-between;margin:0 0 6px">
+<div class="panel-title" style="margin:0"><i class="fa-solid fa-table"></i> 10. Tabla dinámica</div>
+<div class="controls" style="margin:0"><button type="button" id="gM" class="on">Por mes</button><button type="button" id="gW">Por semana</button></div>
+</div>
+<p class="phint">Variación % y ganancia en $ por mes o semana.</p>
+<div class="table-scroll"><table id="pivot"></table></div>
+</section>
+</div>
+<section class="cyber-panel">
+<div class="panel-title"><i class="fa-solid fa-database"></i> 11. Actualizar datos (tu plan de enero)</div>
+<p class="phint">Descarga el JSON, agrega los cierres nuevos y súbelo: la terminal se recalcula sola, sin tocar código.</p>
+<div class="controls">
+<button type="button" id="dlData" class="ghost"><i class="fa-solid fa-download"></i> Descargar datos (JSON)</button>
+<label style="cursor:pointer;font-size:.7rem;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px;border:1px solid rgba(0,243,255,.5);border-radius:4px;padding:8px 14px;font-family:'Orbitron',sans-serif"><i class="fa-solid fa-upload"></i> Cargar datos<input type="file" id="upData" accept=".json,application/json" class="hidden"></label>
+<span id="dataMsg" class="phint" style="margin:0"></span>
+</div>
+</section>
+<p class="foot">Ejercicio retrospectivo: muestra lo que pasó, no lo que va a pasar, y no es una recomendación de inversión. Hagen Academy es una academia de formación, no una plataforma de inversión. Se asumen acciones fraccionadas; confirma con tu broker. Los pesos los decide cada usuario — eso es la lección.</p></div>
+
+<footer class="max-w-7xl mx-auto w-full mt-6 bg-cyber-card border border-cyber-border rounded-xl p-3 text-center text-xs text-cyber-text">
+  HagenAcademy Terminal Pro · Precios de la Terminal en vivo vía Stooq (demora ~15 min) · Ejercicio retrospectivo: muestra lo que pasó, no lo que va a pasar, y no es una recomendación de inversión.
+  Paneles con insignia <b style="color:#ffb020">DEMO</b> usan datos de ejemplo — la conexión a APIs en vivo (precio, noticias, sentimiento, analistas) se integra después.
+  Se asumen acciones fraccionadas; confirma impuestos y retenciones con tu broker o contador.
+</footer>
+
+<script>
+if(window.Chart){Chart.defaults.font.family="'JetBrains Mono',monospace";Chart.defaults.color='#94a3b8'}
+const DATA = {"VOO":{"tipo":"ETF","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[693.49,694.45,689.57,692.26,674.3,675.97,674.0,663.41,674.53,678.23,690.04,685.98,677.69,684.35,682.35,672.65,672.0,672.02,668.54,679.26,685.05,683.7,683.08,688.85,685.32,683.5,688.92,692.08,686.73,689.33,692.02,688.37,681.42,680.46,686.11,685.27,676.87,677.4,677.57,679.21,668.91,680.04,684.89,694.61,707.16,705.79,704.59,708.89,708.83,706.6,708.35,713.12,711.78,708.45,703.59,705.1,699.21,701.91,700.03,702.21,702.39,706.93,705.43,703.08,698.48,701.61,708.9,706.19,702.26,699.07,694.86,700.76,697.51,694.41,691.46,699.23,699.98,710.95,710.95,705.79,705.18,708.97,703.61,702.46,700.86,702.35,707.54,712.32,716.2,714.34,711.28,715.59,715.13,715.2,707.43,709.43,701.61,704.6,706.8]},"QQQ":{"tipo":"ETF","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[741.15,744.57,742.62,739.03,703.55,714.54,706.32,692.21,715.59,719.8,742.41,728.3,720.97,739.04,737.18,712.91,709.88,715.63,705.78,723.33,735.63,724.42,711.86,722.07,708.69,710.7,722.53,724.75,711.0,718.94,716.99,705.21,694.61,695.34,708.23,704.62,691.24,683.52,681.41,674.79,661.04,682.84,687.27,699.34,723.1,716.55,713.91,722.28,720.12,717.7,722.95,731.31,730.31,729.11,716.76,715.33,710.19,712.7,705.58,709.98,710.63,720.36,715.68,716.01,706.9,708.5,716.92,718.21,717.61,715.56,707.95,714.14,708.44,703.81,703.99,716.17,720.7,741.47,747.46,741.21,741.1,744.5,736.53,737.93,739.77,742.03,749.58,756.2,759.66,757.73,747.58,751.27,746.04,743.57,728.95,728.0,709.8,718.36,717.63]},"VXUS":{"tipo":"ETF","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[85.77,86.41,85.56,85.71,82.51,83.21,83.29,82.07,84.8,85.14,86.43,86.09,85.61,86.61,86.9,84.26,84.19,84.93,84.33,84.78,85.34,84.38,84.69,86.01,84.5,84.29,84.75,85.19,83.63,84.51,84.84,83.91,83.22,82.92,84.3,84.31,83.47,83.25,83.64,83.1,82.24,84.62,84.44,84.87,86.29,86.35,86.16,87.05,86.67,86.76,87.38,87.56,87.54,87.71,86.28,86.81,86.87,87.55,87.04,87.96,87.66,87.77,87.36,87.16,86.55,87.0,87.81,88.25,87.92,87.25,86.12,86.98,85.88,85.54,85.26,86.34,85.88,87.15,87.49,85.92,85.59,86.35,85.75,85.52,84.96,84.46,85.43,85.85,85.8,84.79,84.1,84.82,84.44,84.54,83.58,83.84,83.43,83.29,83.74]},"META":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[599.44,596.61,621.91,626.49,591.98,584.39,583.59,570.0,567.46,566.01,593.01,599.74,567.13,576.76,563.41,561.76,557.23,542.44,549.82,562.16,562.85,612.43,582.44,599.82,615.09,602.64,630.98,668.68,656.21,660.52,680.77,664.02,645.5,645.34,643.3,626.68,605.62,594.72,593.4,592.94,585.15,538.6,556.27,589.77,587.48,588.31,589.43,591.63,594.45,598.65,578.39,594.5,589.38,568.52,543.24,545.6,545.4,549.47,558.58,569.6,575.69,570.65,577.56,571.89,578.08,592.38,610.2,616.28,613.0,653.17,643.87,647.52,665.08,669.71,672.78,681.77,665.23,741.25,736.6,744.1,777.59,751.66,715.62,738.79,725.18,725.93,728.08,741.9,738.88,721.31,720.89,718.67,742.96,762.5,737.54,736.72,709.33,705.44,694.25]},"AAPL":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[306.05,314.93,309.99,310.96,307.08,301.28,290.3,291.33,295.38,290.88,296.16,298.98,295.69,297.75,296.75,294.05,292.83,274.91,283.54,281.5,289.11,294.13,308.36,312.39,310.39,313.12,315.95,315.05,317.04,314.59,327.22,332.97,333.45,326.31,327.46,325.61,321.38,332.73,336.62,339.79,337.9,333.14,308.64,303.16,309.11,310.73,312.14,313.06,308.26,304.91,302.25,305.26,305.93,305.59,310.03,316.83,311.3,309.35,310.34,309.9,313.45,314.58,319.7,316.85,325.13,324.96,328.21,319.97,316.22,315.34,326.57,332.27,333.08,331.34,332.41,337.0,336.13,338.98,339.75,337.02,335.92,341.07,338.4,329.4,333.02,330.32,333.69,332.89,333.63,336.67,340.42,336.64,340.97,341.27,342.96,342.0,343.46,342.94,339.5]},"NVDA":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[223.85,222.31,214.26,218.42,204.87,208.41,207.96,200.2,204.64,204.96,212.21,207.18,204.42,210.45,208.42,199.82,198.78,195.52,192.31,194.75,199.87,197.36,194.61,195.33,196.71,203.89,202.55,210.72,203.3,211.56,212.26,207.17,202.58,203.05,207.06,211.82,208.53,206.61,196.29,196.79,189.8,194.82,200.53,206.41,211.7,218.97,218.75,223.71,217.31,217.26,223.84,225.05,224.91,224.76,219.49,217.32,216.61,214.48,208.25,212.81,209.43,227.73,217.31,220.53,217.2,224.16,228.19,230.1,225.48,223.42,218.36,218.29,210.96,212.17,213.9,219.34,222.27,227.38,228.87,225.51,224.58,225.07,228.86,227.21,228.38,230.86,233.95,238.9,239.24,237.47,230.48,229.28,226.32,228.52,221.3,217.23,214.13,217.09,216.47]},"PLTR":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[160.65,152.17,142.2,141.7,135.53,136.47,132.07,130.21,131.08,127.99,134.71,133.25,130.63,128.47,119.5,116.7,113.5,107.27,112.93,115.7,116.67,125.73,129.3,132.54,134.37,132.22,129.04,126.79,130.04,133.72,133.76,134.44,132.38,134.85,132.66,124.57,123.37,122.92,131.53,123.53,123.0,122.26,123.06,125.65,162.66,158.43,155.92,172.01,175.23,174.94,171.04,179.01,174.04,172.55,171.54,175.19,173.96,179.94,175.89,172.73,177.5,185.93,186.29,186.38,179.92,169.46,182.53,174.33,170.3,169.53,165.86,167.23,173.31,172.56,174.34,176.24,177.64,183.09,184.99,191.79,192.59,189.67,187.48,186.97,187.05,190.04,188.75,189.4,192.07,194.12,198.78,209.05,209.0,208.67,200.97,200.5,186.03,194.15,192.6]},"SNAP":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[5.86,5.76,5.73,6.07,5.76,5.65,5.59,5.38,5.33,5.26,5.71,5.16,4.74,4.66,4.63,4.46,4.53,4.34,4.41,4.42,4.44,4.75,4.84,4.75,4.65,4.63,4.7,4.68,4.66,4.68,4.76,4.69,4.53,4.56,4.56,4.47,4.41,4.35,4.52,4.77,4.73,4.69,4.69,5.04,5.79,5.33,5.22,5.33,5.35,5.51,5.2,5.3,5.41,5.18,5.11,5.24,5.21,5.24,5.53,5.92,5.42,5.33,5.43,5.55,5.35,5.59,5.7,5.47,5.43,5.31,5.52,5.68,5.84,5.83,5.72,5.65,5.53,5.7,5.62,5.29,5.43,5.42,5.22,5.34,5.4,5.65,5.58,5.61,5.78,5.81,5.86,6.23,6.53,6.49,6.1,6.44,6.13,6.27,6.38]},"NFLX":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[85.85,83.33,81.52,81.56,82.18,82.64,81.41,82.0,81.27,80.34,81.67,78.72,76.96,77.38,72.88,72.82,71.84,70.9,73.81,73.78,71.4,74.19,77.65,76.02,76.18,75.59,75.47,73.37,73.83,73.53,73.68,74.35,68.95,67.6,68.67,68.53,68.89,70.09,70.4,72.39,73.63,73.17,71.71,73.33,73.57,74.2,73.69,74.14,76.29,74.79,74.21,78.24,78.16,76.02,77.77,80.22,80.14,79.59,80.01,82.23,81.46,79.84,81.72,81.05,80.81,82.73,82.67,78.25,76.77,76.03,76.01,77.4,80.32,77.9,76.41,75.31,71.79,73.36,72.16,71.36,71.72,71.15,69.23,70.3,69.58,67.85,67.06,67.5,68.69,69.7,71.57,70.3,70.61,70.46,70.57,72.61,70.53,69.85,68.69]},"MSFT":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[459.65,440.48,426.54,427.25,415.89,410.97,402.65,396.61,389.61,390.01,399.01,393.09,378.2,378.69,366.65,373.24,364.77,352.17,372.27,367.88,372.32,383.56,389.76,386.01,388.11,382.62,383.64,384.38,390.26,384.21,394.89,400.35,393.08,401.53,397.0,389.61,380.86,380.98,388.37,392.61,389.81,450.25,463.85,486.73,491.88,486.54,498.92,499.05,505.11,502.86,491.5,495.95,494.47,479.45,480.73,483.4,481.15,483.24,487.31,491.71,496.37,505.06,513.53,507.29,501.02,496.82,510.12,499.7,493.95,491.65,492.44,495.63,505.41,497.12,490.3,497.75,493.78,501.61,498.0,500.59,497.93,516.17,509.22,508.96,512.9,512.8,517.53,525.18,529.3,529.76,522.61,535.07,541.15,543.45,533.69,539.44,529.05,533.52,531.87]},"TSLA":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[415.88,423.74,423.7,418.45,391.0,408.95,396.68,381.59,399.15,406.43,411.15,404.66,396.38,400.49,405.05,381.61,375.53,375.12,379.71,411.84,420.6,425.3,393.45,419.77,402.9,394.06,406.55,407.76,394.76,396.18,394.46,391.06,380.84,369.57,378.93,374.01,319.69,313.03,309.22,307.44,298.32,308.85,311.21,322.08,327.35,321.55,319.53,328.58,330.88,332.81,327.51,339.96,342.27,339.3,336.87,351.12,345.13,362.86,348.95,350.25,345.82,354.81,348.75,367.95,356.09,357.01,376.37,354.08,368.16,367.81,363.56,365.44,358.97,356.58,358.08,366.2,364.27,375.3,378.9,380.12,377.94,372.11,357.45,352.84,354.81,354.11,370.59,378.73,380.68,377.81,375.0,382.7,378.03,375.23,367.16,362.44,354.72,368.06,373.71]},"AVGO":{"tipo":"Acci\u00f3n","dates":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-19","2026-10-20"],"closes":[458.41,479.94,477.6,417.49,384.42,395.25,390.83,370.84,384.26,380.77,392.6,375.43,391.57,409.95,391.42,379.46,381.38,378.22,364.36,371.77,377.06,368.67,359.79,373.22,370.11,387.98,400.38,399.24,383.35,388.4,393.56,373.77,370.16,377.47,385.8,396.09,391.76,381.23,382.52,380.22,369.65,387.14,388.57,391.52,417.4,417.52,419.81,426.98,421.63,415.32,415.29,417.06,392.28,391.72,379.31,361.82,363.37,367.78,358.11,356.09,354.94,370.86,368.12,369.67,369.01,366.57,356.51,357.25,367.89,363.72,360.17,361.33,344.09,338.65,338.89,346.67,356.96,362.66,364.54,354.99,350.36,352.81,349.57,355.1,351.19,343.64,355.14,362.51,375.81,376.51,360.14,361.54,354.73,357.31,346.25,344.33,328.75,334.59,334.37]}};
+const COLORS=["#00ff66","#00f3ff","#ff0055","#ffea00","#B48CF2","#4DD0E1","#F06292","#AED581","#FFD54F","#90A4AE","#CE93D8","#F0A04B"];
+const MN=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const PRESETS={core:[["VOO",35],["QQQ",21],["VXUS",14],["META",7.5],["AAPL",7.5],["NVDA",7.5],["PLTR",7.5]],tech:[["META",25],["AAPL",25],["NVDA",25],["PLTR",25]],voo:[["VOO",100]]};
+let capital=1000,startIdx=0,group='M',charts={};
+let assets=PRESETS.core.map(a=>({t:a[0],w:a[1]}));
+const $=id=>document.getElementById(id);
+const usd=(n,s)=>(s&&n>0?'+':n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=(n,s=true)=>(s&&n>0?'+':n<0?'−':'')+Math.abs(n).toFixed(2)+'%';
+const cls=n=>n>=0?'up':'down';
+const fd=d=>{const p=d.split('-');return +p[2]+' '+MN[+p[1]-1]};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const LEG={position:'bottom',labels:{color:css('--muted'),usePointStyle:true,boxWidth:8,font:{size:11}}};
+const CHIDS={line:'lineChart',dd:'ddChart',al:'assetChart',drift:'driftChart',ct:'contribChart',pd:'pieD'};
+const IDX={};let CD=null,CDk='';
+function im(t){return IDX[t]||(IDX[t]=indexMap(t))}
+function clearCaches(){for(const k in IDX)delete IDX[k];CD=null;CDk=''}
+function commonDates(){if(!assets.length)return[];const k=assets.map(a=>a.t).sort().join('|');if(CD&&CDk===k)return CD;let d=DATA[assets[0].t].dates.slice();for(let i=1;i<assets.length;i++){const s=new Set(DATA[assets[i].t].dates);d=d.filter(x=>s.has(x))}CD=d;CDk=k;return d}
+function indexMap(t){const m={};DATA[t].dates.forEach((d,i)=>m[d]=i);return m}
+function tickers(){return Object.keys(DATA)}
+function makeChart(key,cfg,sig){const slot=charts[key];if(slot&&slot.sig===sig){slot.inst.data=cfg.data;slot.inst.options=cfg.options;slot.inst.update();return slot.inst}if(slot)slot.inst.destroy();const inst=new Chart($(CHIDS[key]),cfg);charts[key]={inst,sig};return inst}
+function sumW(){return assets.reduce((a,b)=>a+(+b.w||0),0)}
+function fillStart(){const s=$('start');if(!assets.length){s.innerHTML='';return}const d=commonDates();s.innerHTML='';d.forEach((dt,i)=>{const o=document.createElement('option');o.value=i;o.textContent=fd(dt)+' · '+DATA[assets[0].t].closes[im(assets[0].t)[dt]].toFixed(2);s.appendChild(o)});if(startIdx>=d.length)startIdx=0;s.value=startIdx}
+function fillBench(){const b=$('bench'),cur=b.value;b.innerHTML='<option value="">Nada</option>';tickers().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;b.appendChild(o)});b.value=cur}
+function renderAssetRows(){
+ $('assetList').innerHTML=assets.map((a,i)=>{const opts=tickers().filter(t=>t===a.t||!assets.some(x=>x.t===t)).map(t=>'<option '+(t===a.t?'selected':'')+'>'+t+'</option>').join('');
+  return '<div class="assetrow"><select data-i="'+i+'" class="tk">'+opts+'</select><input data-i="'+i+'" class="wt" type="number" min="0" max="100" step="0.5" value="'+a.w+'"><button type="button" class="rm" data-i="'+i+'" title="Quitar">✕</button></div>'}).join('')||'<div class="msg bad">Portafolio vacío. Añade activos o usa una plantilla.</div>';
+ document.querySelectorAll('.tk').forEach(s=>s.onchange=e=>{assets[+e.target.dataset.i].t=e.target.value;fillStart();render()});
+ document.querySelectorAll('.wt').forEach(s=>s.oninput=e=>{assets[+e.target.dataset.i].w=+e.target.value;updateSum();render()});
+ document.querySelectorAll('.rm').forEach(b=>b.onclick=e=>{assets.splice(+e.target.dataset.i,1);fillStart();renderAssetRows();render()});
+ updateSum()}
+function updateSum(){
+ const s=sumW();$('sumW').textContent=s.toFixed(1);
+ $('sumFill').style.width=Math.min(s,100)+'%';
+ $('sumFill').style.background=Math.abs(s-100)<0.01?'var(--up)':(s>100?'var(--down)':'var(--gold)');
+ const m=$('sumMsg');
+ if(!assets.length){m.className='msg bad';m.textContent='Añade al menos un activo.';return false}
+ if(Math.abs(s-100)>0.01){m.className='msg bad';m.textContent='La suma es '+s.toFixed(1)+'%. Ajusta para llegar a 100% — así funciona un portafolio real.';return false}
+ const small=assets.filter(a=>a.w>0&&a.w<5);
+ m.className='msg good';m.textContent='✓ Pesos válidos · simulando compra y mantenimiento desde '+fd(commonDates()[startIdx])+'.'+(small.length?' Ojo: '+small.map(a=>a.t).join(', ')+' con menos de 5%: posiciones muy chicas aportan poco y exigen vigilar más empresas.':'');
+ return true}
+$('addAsset').onclick=()=>{const free=tickers().find(t=>!assets.some(a=>a.t===t));if(!free)return;const rem=100-sumW();assets.push({t:free,w:rem>0&&rem<=100?+rem.toFixed(1):0});fillStart();renderAssetRows();render()};
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{assets=PRESETS[b.dataset.preset].map(a=>({t:a[0],w:a[1]}));fillStart();renderAssetRows();render()});
+let dbt=null;function debRender(){clearTimeout(dbt);dbt=setTimeout(render,120)}
+$('capital').oninput=e=>{capital=Math.max(1,+e.target.value||0);debRender()};
+$('start').onchange=e=>{startIdx=+e.target.value;render()};
+$('bench').onchange=()=>render();
+$('gM').onclick=()=>{group='M';$('gM').classList.add('on');$('gW').classList.remove('on');render()};
+$('gW').onclick=()=>{group='W';$('gW').classList.add('on');$('gM').classList.remove('on');render()};
+function compute(){const dates=commonDates(),maps=assets.map(a=>im(a.t)),rows=[];for(let i=startIdx;i<dates.length;i++){const dt=dates[i];let v=0;const per={};for(let j=0;j<assets.length;j++){const c=DATA[assets[j].t].closes[maps[j][dt]];per[assets[j].t]=c;v+=assets[j].sh*c}rows.push({dt,c:per,v})}return rows}
+function render(){
+ const ok=updateSum();
+ if(!ok){$('results').classList.add('hidden');return}
+ $('results').classList.remove('hidden');
+ const dates=commonDates(),entry=dates[startIdx];
+ assets.forEach(a=>{a.sh=(capital*(+a.w||0)/100)/DATA[a.t].closes[im(a.t)[entry]]});
+ const rows=compute(),first=rows[0],last=rows[rows.length-1];
+ let peak=rows[0],low=rows[0],maxDD=0,pv=rows[0].v;
+ rows.forEach(r=>{if(r.v>pv)pv=r.v;if(r.v<low.v)low=r;if(r.v>peak.v)peak=r;const dd=r.v/pv-1;if(dd<maxDD)maxDD=dd});
+ $('tiles').innerHTML=[
+  ['Valor hoy',usd(last.v).replace('+',''),'desde '+fd(first.dt)+' · '+assets.length+' activo(s)','hero',null],
+  ['Ganancia hoy',usd(last.v-capital,1),pct((last.v/capital-1)*100)+' sobre '+usd(capital).replace('+',''),'',last.v-capital],
+  ['Ganancia en el pico',usd(peak.v-capital,1),usd(peak.v).replace('+','')+' · '+fd(peak.dt),'',peak.v-capital],
+  ['Devuelto desde el pico',usd(-(peak.v-last.v)),pct((last.v/peak.v-1)*100)+' desde '+fd(peak.dt),'',-(peak.v-last.v)],
+  ['Peor momento',usd(low.v-capital,1),pct((low.v/capital-1)*100)+' · '+fd(low.dt),'',low.v-capital],
+  ['Máx. caída (drawdown)',pct(maxDD*100,false),'la prueba de fuego: ¿aguantas esto sin vender?','',-1]
+ ].map((t,i)=>'<div class="tile '+(t[3]||'')+'"><div class="k">'+t[0]+'</div><div class="v '+(t[4]===null?'':(i===5?'down':cls(t[4])))+'">'+t[1]+'</div><div class="s">'+t[2]+'</div></div>').join('');
+ $('chartNote').textContent='Con '+usd(capital).replace('+','')+' el '+fd(first.dt)+': llegó a '+usd(peak.v).replace('+','')+' el '+fd(peak.dt)+' y hoy está en '+usd(last.v).replace('+','')+'.';
+ drawLine(rows,peak,last,capital);
+ drawDD(rows);
+ drawAssetLines(rows,first);
+ drawDrift(last);
+ drawContrib(first,last);
+ drawPieD(rows);
+ drawAssetTable(first,last,capital);
+ drawPivot(rows,capital)}
+function cbase(){return{responsive:true,maintainAspectRatio:false,animation:{duration:350}}}
+function gridScales(){return{x:{ticks:{color:css('--muted'),maxTicksLimit:9,maxRotation:0,font:{size:11}},grid:{color:css('--grid')}},y:{ticks:{color:css('--muted'),font:{size:11}},grid:{color:css('--grid')}}}}
+function drawLine(rows,peak,last,capital){
+ const pi=rows.indexOf(peak),li=rows.length-1;
+ const pr=rows.map((_,i)=>[0,pi,li].includes(i)?5:0);
+ const pc=rows.map(()=>css('--gold'));
+ pc[pi]=css('--up');pc[li]=css('--gold');
+ const ds=[{label:'Tu portafolio ($)',data:rows.map(r=>+r.v.toFixed(2)),borderColor:css('--gold'),backgroundColor:'rgba(0,255,102,.10)',fill:'origin',tension:.25,borderWidth:2.5,pointRadius:pr,pointBackgroundColor:pc,pointBorderColor:pc,pointHoverRadius:6},
+ {label:'Capital inicial',data:rows.map(()=>capital),borderColor:css('--muted'),borderDash:[6,5],borderWidth:1.3,pointRadius:0,fill:false}];
+ const b=$('bench').value;
+ if(b){const m=im(b),sh0=capital/DATA[b].closes[m[rows[0].dt]];ds.push({label:'Si todo hubiera sido '+b,data:rows.map(r=>+(sh0*DATA[b].closes[m[r.dt]]).toFixed(2)),borderColor:css('--neon-cyan'),borderWidth:1.6,pointRadius:0,fill:false,borderDash:[2,3],tension:.25})}
+ makeChart('line',{type:'line',data:{labels:rows.map(r=>fd(r.dt)),datasets:ds},options:{...cbase(),interaction:{mode:'index',intersect:false},scales:{...gridScales(),y:{...gridScales().y,ticks:{color:css('--muted'),callback:v=>'$'+v,font:{size:11}},grace:'5%'}},plugins:{legend:LEG,tooltip:{callbacks:{label:c=>c.datasetIndex===1?null:c.dataset.label+': '+usd(c.parsed.y).replace('+','')}}}}},rows.length+'|'+(b||''))}
+function drawDD(rows){
+ let pk=rows[0].v;const dd=rows.map(r=>{if(r.v>pk)pk=r.v;return +((r.v/pk-1)*100).toFixed(2)});
+ makeChart('dd',{type:'line',data:{labels:rows.map(r=>fd(r.dt)),datasets:[{label:'Drawdown %',data:dd,borderColor:css('--down'),backgroundColor:'rgba(255,0,85,.22)',fill:'origin',tension:.2,borderWidth:2,pointRadius:0}]},options:{...cbase(),scales:{...gridScales(),y:{...gridScales().y,grace:'10%'}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' Caída desde el pico: '+c.parsed.y.toFixed(2)+'%'}}}}},String(rows.length))}
+function drawAssetLines(rows,first){
+ const ds=assets.map((a,i)=>({label:a.t,data:rows.map(r=>+((r.c[a.t]/first.c[a.t]-1)*100).toFixed(2)),borderColor:COLORS[i%12],borderWidth:2,tension:.25,pointRadius:0}));
+ makeChart('al',{type:'line',data:{labels:rows.map(r=>fd(r.dt)),datasets:ds},options:{...cbase(),interaction:{mode:'index',intersect:false},scales:{...gridScales(),y:{...gridScales().y,grace:'10%'}},plugins:{legend:LEG,tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+pct(c.parsed.y)}}}}},assets.map(a=>a.t).join(',')+'|'+rows.length)}
+function drawDrift(last){
+ const today=assets.map(a=>+(a.sh*last.c[a.t]/last.v*100).toFixed(1));
+ const plan=assets.map(a=>+(+a.w||0).toFixed(1));
+ makeChart('drift',{type:'bar',data:{labels:assets.map(a=>a.t),datasets:[{label:'Peso al entrar %',data:plan,backgroundColor:'rgba(100,116,139,.6)',borderRadius:4},{label:'Peso hoy %',data:today,backgroundColor:css('--gold'),borderRadius:4}]},options:{...cbase(),indexAxis:'y',scales:{...gridScales(),x:{...gridScales().x,grace:'10%'}},plugins:{legend:LEG}}},assets.map(a=>a.t).join(','))}
+function drawContrib(first,last){
+ const g=assets.map(a=>+(a.sh*(last.c[a.t]-first.c[a.t])).toFixed(2));
+ makeChart('ct',{type:'bar',data:{labels:assets.map(a=>a.t),datasets:[{label:'Ganancia $',data:g,backgroundColor:g.map(v=>v>=0?css('--up'):css('--down')),borderRadius:4}]},options:{...cbase(),indexAxis:'y',scales:{...gridScales(),x:{...gridScales().x,grace:'10%',ticks:{...gridScales().x.ticks,callback:v=>'$'+v}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+usd(c.parsed.x,1)}}}}},assets.map(a=>a.t).join(','))}
+function drawPieD(rows){
+ const up=rows.filter((r,i)=>i&&r.v>rows[i-1].v).length,dn=rows.length-1-up;
+ $('pieDNote').textContent=up+' días de alza y '+dn+' de baja desde la entrada.';
+ makeChart('pd',{type:'doughnut',data:{labels:['Días de alza','Días de baja'],datasets:[{data:[up,dn],backgroundColor:[css('--up'),css('--down')],borderColor:'#0a0f1a',borderWidth:3}]},options:{...cbase(),cutout:'55%',plugins:{legend:LEG}}},'d')}
+function drawAssetTable(first,last,capital){
+ let best=-1e18,bt='';assets.forEach(a=>{const g=a.sh*(last.c[a.t]-first.c[a.t]);if(g>best){best=g;bt=a.t}});
+ $('assetTable').innerHTML='<thead><tr><th>Activo</th><th>Peso</th><th>Invertido</th><th>Cierre entrada</th><th>Acciones</th><th>Cierre hoy</th><th>Valor hoy</th><th>Ganancia $</th><th>Rend %</th><th>Aporte</th></tr></thead><tbody>'+
+ assets.map(a=>{const inv=capital*(+a.w||0)/100,g=a.sh*(last.c[a.t]-first.c[a.t]);
+  return '<tr'+(a.t===bt?' class="hl"':'')+'><td><b>'+a.t+'</b> <span class="pill">'+DATA[a.t].tipo+'</span></td><td>'+(+a.w||0).toFixed(1)+'%</td><td>'+usd(inv).replace('+','')+'</td><td>'+first.c[a.t].toFixed(2)+'</td><td>'+a.sh.toFixed(4)+'</td><td>'+last.c[a.t].toFixed(2)+'</td><td>'+usd(a.sh*last.c[a.t]).replace('+','')+'</td><td class="'+cls(g)+'">'+usd(g,1)+'</td><td class="'+cls(g/inv)+'">'+pct(g/inv)+'</td><td class="'+cls(g)+'">'+pct(g/capital)+'</td></tr>'}).join('')+
+ '</tbody><tfoot><tr><td>Total</td><td>100%</td><td>'+usd(capital).replace('+','')+'</td><td></td><td></td><td></td><td>'+usd(last.v).replace('+','')+'</td><td class="'+cls(last.v-capital)+'">'+usd(last.v-capital,1)+'</td><td class="'+cls(last.v/capital-1)+'">'+pct((last.v/capital-1)*100)+'</td><td></td></tr></tfoot>'}
+function weekKey(d){const t=new Date(d+'T00:00:00Z');const day=(t.getUTCDay()+6)%7;t.setUTCDate(t.getUTCDate()-day);return t.toISOString().slice(0,10)}
+function drawPivot(rows,capital){
+ const g=new Map();rows.forEach((r,i)=>{const k=group==='M'?r.dt.slice(0,7):weekKey(r.dt);if(!g.has(k))g.set(k,[]);g.get(k).push(i)});
+ let out=[];g.forEach((idx,k)=>{const s0=idx[0]>0?rows[idx[0]-1].v:capital,s1=rows[idx[idx.length-1]].v;out.push({lab:group==='M'?MN[+k.slice(5)-1]+' '+k.slice(0,4):'Sem. '+fd(k),p:(s1/s0-1)*100,gn:s1-s0,v:s1})});
+ const tot=rows[rows.length-1];
+ $('pivot').innerHTML='<thead><tr><th>'+(group==='M'?'Mes':'Semana')+'</th><th>Variación %</th><th>Ganancia $</th><th>Valor al cierre</th></tr></thead><tbody>'+
+ out.map(r=>'<tr><td>'+r.lab+'</td><td class="'+cls(r.p)+'">'+pct(r.p)+'</td><td class="'+cls(r.gn)+'">'+usd(r.gn,1)+'</td><td>'+usd(r.v).replace('+','')+'</td></tr>').join('')+
+ '</tbody><tfoot><tr><td>Total</td><td class="'+cls(tot.v/capital-1)+'">'+pct((tot.v/capital-1)*100)+'</td><td class="'+cls(tot.v-capital)+'">'+usd(tot.v-capital,1)+'</td><td>'+usd(tot.v).replace('+','')+'</td></tr></tfoot>'}
+$('dlData').onclick=()=>{const blob=new Blob([JSON.stringify(DATA)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hagen_datos_portafolio.json';a.click()};
+$('upData').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{const j=JSON.parse(r.result);
+  const ok=Object.keys(j).every(t=>Array.isArray(j[t].dates)&&Array.isArray(j[t].closes)&&j[t].dates.length===j[t].closes.length&&j[t].dates.length>0);
+  if(!ok)throw 0;
+  for(const t of Object.keys(j))if(!j[t].tipo)j[t].tipo='Acción';
+  Object.assign(DATA,j);assets=assets.filter(a=>DATA[a.t]);clearCaches();
+  
+  $('dataMsg').textContent='✓ Datos cargados: '+Object.keys(DATA).length+' activos.'}
+ catch(_){$('dataMsg').textContent='✗ Archivo inválido. Usa el JSON descargado como plantilla.'}};
+ r.readAsText(f)};
+
+
+// ==================== TERMINAL (datos reales del Excel) ====================
+const NAMES={VOO:["Vanguard S&P 500 ETF","NYSE Arca"],QQQ:["Invesco QQQ Trust","NASDAQ"],VXUS:["Vanguard Total International Stock ETF","NASDAQ"],META:["Meta Platforms Inc Class A","NASDAQ"],AAPL:["Apple Inc","NASDAQ"],NVDA:["NVIDIA Corporation","NASDAQ"],PLTR:["Palantir Technologies Inc","NASDAQ"],SNAP:["Snap Inc","NYSE"],NFLX:["Netflix Inc","NASDAQ"],MSFT:["Microsoft Corporation","NASDAQ"],TSLA:["Tesla Inc","NASDAQ"],AVGO:["Broadcom Inc","NASDAQ"]};
+const DEMO={
+  META: { name:"Meta Platforms Inc Class A", exchange:"NASDAQ", sector:"Servicios tecnológicos • Software",
+    price:"$647.26", change:"-$50.20 (-7.21%)", isNegative:true, vol:"27.73M", avgVol:"21.01M",
+    marketCap:"1.65T", pe:"23.79", nextEarnings:"21 Oct 2026", divYield:"0.30%", lastDiv:"$0.525",
+    eps:"23.79", range52:"$450.10 - $710.00", beta:"1.21", shares:"2.54B",
+    gaugeStatus:"COMPRA FUERTE", gaugeScore:80, techSell:2, techNeutral:4, techBuy:16,
+    analyst:{ rating:"Compra Fuerte", count:42, buy:25, hold:11, sell:6, targetLow:550, targetAvg:720, targetHigh:850 },
+    social:{ score:78, reddit:82, twitter:74, news:76, mentions:12540, trend:18.5,
+      topics:["#AI","#Metaverse","#Earnings","#Q3"],
+      posts:[
+        { src:"Reddit", tag:"r/wallstreetbets", text:"Meta rompiendo resistencia clave, carga en calls semanales.", sent:"bull", time:"1h" },
+        { src:"X", tag:"@techbull", text:"Gasto en IA de Meta preocupa pero el mercado lo digiere.", sent:"neut", time:"3h" },
+        { src:"Reddit", tag:"r/stocks", text:"Ojo con META si rompe $620 en cierre, alarma bajista.", sent:"bear", time:"5h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[5.33,4.71,5.16,5.80], est:[4.90,4.32,4.78,5.25] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[14.87,18.20,21.40,23.79], est:[14.10,17.80,20.50,22.90] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[134.9,156.2,178.4,201.1], netIncome:[39.1,48.5,56.2,64.8] },
+    news:[
+      { title:"Meta expande centros de datos cuánticos en Norteamérica para 2027.", time:"Hace 1h", src:"Reuters" },
+      { title:"Analistas reiteran recomendación tras aumento de ingresos publicitarios con IA.", time:"Hace 5h", src:"Bloomberg" },
+      { title:"Mark Zuckerberg presenta nuevo modelo de IA open-source.", time:"Hace 12h", src:"WSJ" }
+    ], simReturn:1.15 },
+
+  VOO: { name:"Vanguard S&P 500 ETF", exchange:"NYSE Arca", sector:"ETF • Renta Variable EE.UU.",
+    price:"$512.40", change:"+$3.15 (+0.62%)", isNegative:false, vol:"4.12M", avgVol:"3.85M",
+    marketCap:"1.12T", pe:"26.40", nextEarnings:"N/A (ETF)", divYield:"1.32%", lastDiv:"$1.85",
+    eps:"N/A", range52:"$410 - $525", beta:"1.00", shares:"N/A",
+    gaugeStatus:"COMPRA", gaugeScore:70, techSell:1, techNeutral:6, techBuy:13,
+    analyst:{ rating:"Compra", count:18, buy:12, hold:5, sell:1, targetLow:490, targetAvg:530, targetHigh:560 },
+    social:{ score:65, reddit:68, twitter:60, news:67, mentions:5820, trend:6.2,
+      topics:["#SP500","#BuyAndHold","#ETF","#Index"],
+      posts:[
+        { src:"Reddit", tag:"r/Bogleheads", text:"VOO sigue siendo el core del portafolio a largo plazo.", sent:"bull", time:"2h" },
+        { src:"X", tag:"@index_invest", text:"Entradas récord al S&P 500 este trimestre.", sent:"bull", time:"6h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[2.10,2.15,2.22,2.30], est:[2.05,2.10,2.18,2.25] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[7.80,8.40,9.10,9.80], est:[7.60,8.20,8.90,9.50] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[410,480,520,590], netIncome:[85,98,110,125] },
+    news:[
+      { title:"S&P 500 marca nuevo máximo impulsado por tecnológicas.", time:"Hace 2h", src:"CNBC" },
+      { title:"Entradas récord de capital hacia VOO en el último trimestre.", time:"Hace 8h", src:"Bloomberg" }
+    ], simReturn:0.52 },
+
+  QQQ: { name:"Invesco QQQ Trust Series 1", exchange:"NASDAQ", sector:"ETF • Tecnológicas Gran Cap",
+    price:"$485.90", change:"+$5.40 (+1.12%)", isNegative:false, vol:"32.10M", avgVol:"30.50M",
+    marketCap:"285B", pe:"31.20", nextEarnings:"N/A (ETF)", divYield:"0.58%", lastDiv:"$0.68",
+    eps:"N/A", range52:"$360 - $500", beta:"1.14", shares:"N/A",
+    gaugeStatus:"COMPRA FUERTE", gaugeScore:85, techSell:1, techNeutral:3, techBuy:18,
+    analyst:{ rating:"Compra Fuerte", count:15, buy:11, hold:3, sell:1, targetLow:460, targetAvg:510, targetHigh:550 },
+    social:{ score:72, reddit:76, twitter:70, news:70, mentions:8940, trend:12.8,
+      topics:["#Nasdaq100","#TechBull","#AI","#BigTech"],
+      posts:[
+        { src:"Reddit", tag:"r/investing", text:"QQQ + IA = la combinación del año, ojo la concentración.", sent:"bull", time:"1h" },
+        { src:"X", tag:"@quanttrader", text:"Flujo de opciones en QQQ sugiere continuación alcista.", sent:"bull", time:"4h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[3.10,3.25,3.40,3.60], est:[3.00,3.15,3.30,3.45] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[11.20,12.80,14.50,16.10], est:[10.90,12.40,14.00,15.60] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[210,250,290,340], netIncome:[52,64,75,88] },
+    news:[
+      { title:"Invesco QQQ encabeza ganancias semanales del sector de alta tecnología.", time:"Hace 3h", src:"MarketWatch" },
+      { title:"Perspectivas positivas sobre Nasdaq-100 para cierre de año.", time:"Hace 6h", src:"Barron's" }
+    ], simReturn:0.68 },
+
+  VXUS: { name:"Vanguard Total International Stock ETF", exchange:"NASDAQ", sector:"ETF • Renta Variable Global ex-US",
+    price:"$62.15", change:"-$0.35 (-0.56%)", isNegative:true, vol:"2.85M", avgVol:"3.10M",
+    marketCap:"72B", pe:"14.80", nextEarnings:"N/A (ETF)", divYield:"3.10%", lastDiv:"$0.58",
+    eps:"N/A", range52:"$52 - $65.50", beta:"0.92", shares:"N/A",
+    gaugeStatus:"NEUTRO", gaugeScore:50, techSell:5, techNeutral:10, techBuy:7,
+    analyst:{ rating:"Mantener", count:12, buy:5, hold:5, sell:2, targetLow:58, targetAvg:64, targetHigh:70 },
+    social:{ score:52, reddit:50, twitter:54, news:53, mentions:1240, trend:-3.1,
+      topics:["#EmergingMarkets","#Europa","#Diversification"],
+      posts:[ { src:"Reddit", tag:"r/Bogleheads", text:"VXUS sigue barato vs S&P, paciencia para diversificar.", sent:"neut", time:"3h" } ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[0.45,0.48,0.50,0.52], est:[0.44,0.47,0.49,0.51] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[1.80,1.95,2.10,2.25], est:[1.75,1.90,2.05,2.20] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[95,105,115,125], netIncome:[18,21,23,26] },
+    news:[ { title:"Mercados internacionales muestran estabilidad ante políticas monetarias en Europa.", time:"Hace 10h", src:"FT" } ], simReturn:0.18 },
+
+  AAPL: { name:"Apple Inc.", exchange:"NASDAQ", sector:"Tecnología de Consumo • Hardware",
+    price:"$232.80", change:"+$2.10 (+0.91%)", isNegative:false, vol:"48.20M", avgVol:"45.00M",
+    marketCap:"3.52T", pe:"33.50", nextEarnings:"30 Oct 2026", divYield:"0.45%", lastDiv:"$0.25",
+    eps:"6.95", range52:"$165 - $237.20", beta:"1.28", shares:"15.2B",
+    gaugeStatus:"COMPRA", gaugeScore:72, techSell:2, techNeutral:5, techBuy:15,
+    analyst:{ rating:"Compra", count:38, buy:24, hold:12, sell:2, targetLow:200, targetAvg:250, targetHigh:280 },
+    social:{ score:71, reddit:72, twitter:73, news:68, mentions:15600, trend:9.3,
+      topics:["#AppleIntelligence","#iPhone17","#VisionPro","#AI"],
+      posts:[
+        { src:"Reddit", tag:"r/apple", text:"Nueva integración de IA está sorprendiendo en las demos.", sent:"bull", time:"2h" },
+        { src:"X", tag:"@techleaks", text:"iPhone 17 Pro tendría chip M5, especulación al alza.", sent:"bull", time:"7h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[2.18,1.53,1.40,1.64], est:[2.10,1.50,1.35,1.60] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[6.13,6.57,7.10,7.80], est:[6.00,6.45,7.00,7.65] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[383.3,391.0,412.0,440.0], netIncome:[97.0,100.5,108.0,118.0] },
+    news:[
+      { title:"Apple presenta avances en IA para dispositivos Pro.", time:"Hace 4h", src:"The Verge" },
+      { title:"Ventas de iPhone en mercados emergentes impulsan proyecciones.", time:"Hace 7h", src:"Nikkei" }
+    ], simReturn:0.48 },
+
+  NVDA: { name:"NVIDIA Corporation", exchange:"NASDAQ", sector:"Semiconductores • Hardware IA",
+    price:"$138.50", change:"+$4.20 (+3.13%)", isNegative:false, vol:"65.40M", avgVol:"60.10M",
+    marketCap:"3.40T", pe:"42.10", nextEarnings:"18 Nov 2026", divYield:"0.08%", lastDiv:"$0.01",
+    eps:"3.28", range52:"$40 - $140.70", beta:"1.68", shares:"24.5B",
+    gaugeStatus:"COMPRA FUERTE", gaugeScore:92, techSell:0, techNeutral:2, techBuy:20,
+    analyst:{ rating:"Compra Fuerte", count:48, buy:38, hold:8, sell:2, targetLow:110, targetAvg:180, targetHigh:220 },
+    social:{ score:92, reddit:95, twitter:90, news:88, mentions:48720, trend:42.7,
+      topics:["#AI","#Blackwell","#DataCenters","#JensenHuang","#NVDA"],
+      posts:[
+        { src:"Reddit", tag:"r/wallstreetbets", text:"NVDA es el nuevo estándar, todo lo de IA pasa por aquí.", sent:"bull", time:"15m" },
+        { src:"X", tag:"@ai_insider", text:"Demanda insaciable de GPUs H200 y B200, guidance al alza.", sent:"bull", time:"2h" },
+        { src:"Reddit", tag:"r/stocks", text:"Ojo: valuación exigente, cualquier miss castiga fuerte.", sent:"bear", time:"6h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[0.52,0.61,0.68,0.75], est:[0.48,0.58,0.64,0.70] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[1.19,2.45,3.28,4.10], est:[1.10,2.30,3.15,3.95] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[60.9,96.3,125.0,160.0], netIncome:[29.7,53.0,71.0,90.0] },
+    news:[
+      { title:"NVIDIA anuncia entrega masiva de chips para supercomputación.", time:"Hace 30m", src:"Reuters" },
+      { title:"Demanda sin precedentes consolida liderazgo de NVIDIA.", time:"Hace 3h", src:"Bloomberg" }
+    ], simReturn:2.10 },
+
+  PLTR: { name:"Palantir Technologies Inc Class A", exchange:"NASDAQ", sector:"Software • IA Gubernamental",
+    price:"$197.68", change:"-$4.04 (-2.00%)", isNegative:true, vol:"11.39M", avgVol:"23.15M",
+    marketCap:"477B", pe:"171.00", nextEarnings:"En 11 días", divYield:"0.00%", lastDiv:"N/A",
+    eps:"1.15", range52:"$15 - $210", beta:"2.15", shares:"2.28B",
+    gaugeStatus:"COMPRA", gaugeScore:78, techSell:2, techNeutral:4, techBuy:16,
+    analyst:{ rating:"Compra", count:22, buy:13, hold:7, sell:2, targetLow:120, targetAvg:210, targetHigh:260 },
+    social:{ score:85, reddit:92, twitter:80, news:78, mentions:32400, trend:34.5,
+      topics:["#PLTR","#AIP","#GovernmentAI","#Karp"],
+      posts:[
+        { src:"Reddit", tag:"r/wallstreetbets", text:"PLTR sigue siendo el rey del retail, no lo suelto.", sent:"bull", time:"1h" },
+        { src:"Reddit", tag:"r/PLTR", text:"Contrato de defensa multimillonario confirmado.", sent:"bull", time:"3h" },
+        { src:"X", tag:"@short_seller", text:"Valuación absurda vs fundamentales, ojo con la corrección.", sent:"bear", time:"8h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q3 25','Q4 25','Q1 26','Q2 26'], real:[0.10,0.12,0.14,0.16], est:[0.08,0.10,0.12,0.14] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[0.25,0.40,0.75,1.15], est:[0.20,0.35,0.70,1.05] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[2.23,2.80,3.60,4.50], netIncome:[0.21,0.45,0.90,1.35] },
+    news:[
+      { title:"Palantir amplía IA soberana con nuevos clientes gubernamentales.", time:"Hace 21h", src:"WSJ" },
+      { title:"Contrato multimillonario de defensa impulsa plataforma AIP.", time:"Hace 1d", src:"Defense News" }
+    ], simReturn:1.85 },
+
+  SNAP: { name:"Snap Inc. Class A", exchange:"NYSE", sector:"Redes Sociales • Tecnología",
+    price:"$10.85", change:"-$0.42 (-3.73%)", isNegative:true, vol:"18.50M", avgVol:"22.10M",
+    marketCap:"17.8B", pe:"N/A", nextEarnings:"04 Nov 2026", divYield:"0.00%", lastDiv:"N/A",
+    eps:"-0.38", range52:"$8.50 - $16.20", beta:"1.05", shares:"1.64B",
+    gaugeStatus:"VENTA", gaugeScore:30, techSell:12, techNeutral:6, techBuy:4,
+    analyst:{ rating:"Mantener", count:28, buy:6, hold:14, sell:8, targetLow:8, targetAvg:11, targetHigh:15 },
+    social:{ score:45, reddit:42, twitter:48, news:44, mentions:4210, trend:-8.4,
+      topics:["#Snap","#AR","#SnapchatPlus","#AdRevenue"],
+      posts:[
+        { src:"Reddit", tag:"r/stocks", text:"SNAP sigue sin convencer, burn de caja preocupante.", sent:"bear", time:"4h" },
+        { src:"X", tag:"@socialmedia_w", text:"Nuevas gafas AR podrían dar sorpresa positiva.", sent:"neut", time:"9h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[0.08,-0.05,-0.02,0.01], est:[0.06,-0.07,-0.04,-0.01] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[-0.85,-0.50,-0.20,0.05], est:[-0.90,-0.55,-0.25,0.00] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[4.60,5.10,5.80,6.40], netIncome:[-1.30,-0.75,-0.30,0.08] },
+    news:[ { title:"Snap busca monetizar gafas de realidad aumentada para frenar caídas.", time:"Hace 5h", src:"TechCrunch" } ], simReturn:-0.15 },
+
+  NFLX: { name:"Netflix Inc.", exchange:"NASDAQ", sector:"Entretenimiento • Streaming",
+    price:"$712.30", change:"+$12.50 (+1.79%)", isNegative:false, vol:"3.40M", avgVol:"3.80M",
+    marketCap:"305B", pe:"41.20", nextEarnings:"19 Oct 2026", divYield:"0.00%", lastDiv:"N/A",
+    eps:"17.28", range52:"$420 - $730", beta:"1.22", shares:"428M",
+    gaugeStatus:"COMPRA FUERTE", gaugeScore:82, techSell:1, techNeutral:4, techBuy:17,
+    analyst:{ rating:"Compra", count:35, buy:24, hold:9, sell:2, targetLow:580, targetAvg:780, targetHigh:860 },
+    social:{ score:68, reddit:65, twitter:70, news:69, mentions:7620, trend:7.2,
+      topics:["#Netflix","#StreamingWars","#AdsPlan","#LiveEvents"],
+      posts:[
+        { src:"Reddit", tag:"r/investing", text:"Plan con anuncios está funcionando mejor de lo esperado.", sent:"bull", time:"3h" },
+        { src:"X", tag:"@media_analyst", text:"Deportes en vivo clave para próximo trimestre.", sent:"bull", time:"5h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[4.10,5.28,4.88,5.40], est:[3.90,5.10,4.70,5.20] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[12.03,16.50,19.80,22.40], est:[11.80,16.10,19.20,21.90] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[33.7,38.8,44.2,50.1], netIncome:[5.4,7.1,8.8,10.2] },
+    news:[ { title:"Crecimiento de suscriptores con plan de anuncios impulsa a Netflix.", time:"Hace 4h", src:"Variety" } ], simReturn:0.72 },
+
+  MSFT: { name:"Microsoft Corporation", exchange:"NASDAQ", sector:"Software • Cloud / IA",
+    price:"$428.10", change:"+$1.80 (+0.42%)", isNegative:false, vol:"18.90M", avgVol:"20.50M",
+    marketCap:"3.18T", pe:"35.10", nextEarnings:"27 Oct 2026", divYield:"0.75%", lastDiv:"$0.83",
+    eps:"12.20", range52:"$330 - $468", beta:"1.05", shares:"7.43B",
+    gaugeStatus:"COMPRA", gaugeScore:75, techSell:2, techNeutral:5, techBuy:15,
+    analyst:{ rating:"Compra Fuerte", count:44, buy:32, hold:10, sell:2, targetLow:400, targetAvg:490, targetHigh:540 },
+    social:{ score:70, reddit:66, twitter:72, news:73, mentions:11820, trend:8.5,
+      topics:["#Azure","#Copilot","#OpenAI","#Cloud"],
+      posts:[
+        { src:"Reddit", tag:"r/stocks", text:"Azure acelerando otra vez, el motor de MSFT.", sent:"bull", time:"2h" },
+        { src:"X", tag:"@cloud_insider", text:"Copilot adoption mejorando márgenes por usuario.", sent:"bull", time:"6h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[2.93,3.10,3.30,3.45], est:[2.82,3.00,3.20,3.35] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[11.06,12.80,14.20,15.90], est:[10.80,12.50,13.90,15.50] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[211.9,245.1,280.0,320.0], netIncome:[72.4,88.1,101.0,115.0] },
+    news:[ { title:"Azure registra aceleración histórica impulsada por Copilot IA.", time:"Hace 6h", src:"CNBC" } ], simReturn:0.85 },
+
+  TSLA: { name:"Tesla Inc.", exchange:"NASDAQ", sector:"Automotriz • Vehículos Eléctricos e IA",
+    price:"$218.50", change:"-$8.30 (-3.66%)", isNegative:true, vol:"55.20M", avgVol:"62.00M",
+    marketCap:"695B", pe:"61.40", nextEarnings:"22 Oct 2026", divYield:"0.00%", lastDiv:"N/A",
+    eps:"3.55", range52:"$138 - $271", beta:"1.85", shares:"3.18B",
+    gaugeStatus:"NEUTRO", gaugeScore:48, techSell:8, techNeutral:8, techBuy:6,
+    analyst:{ rating:"Mantener", count:40, buy:14, hold:16, sell:10, targetLow:150, targetAvg:230, targetHigh:310 },
+    social:{ score:82, reddit:88, twitter:85, news:70, mentions:38900, trend:22.1,
+      topics:["#TSLA","#Robotaxi","#ElonMusk","#EV"],
+      posts:[
+        { src:"Reddit", tag:"r/wallstreetbets", text:"TSLA es puro meme, pero sigue dando oportunidades.", sent:"neut", time:"30m" },
+        { src:"X", tag:"@elon_fan", text:"Robotaxi será más grande que el negocio de autos.", sent:"bull", time:"2h" },
+        { src:"Reddit", tag:"r/RealTesla", text:"Competencia china aprieta, márgenes al límite.", sent:"bear", time:"5h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[0.71,0.45,0.52,0.60], est:[0.73,0.50,0.55,0.62] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[3.12,2.40,2.90,3.55], est:[3.10,2.50,3.00,3.65] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[96.8,98.2,112.0,130.0], netIncome:[15.0,7.1,9.5,12.2] },
+    news:[ { title:"Tesla enfoca estrategia en producción masiva de Robotaxis y energía.", time:"Hace 2h", src:"Electrek" } ], simReturn:0.35 },
+
+  AVGO: { name:"Broadcom Inc.", exchange:"NASDAQ", sector:"Semiconductores • Redes e IA",
+    price:"$172.40", change:"+$3.80 (+2.25%)", isNegative:false, vol:"14.10M", avgVol:"15.30M",
+    marketCap:"805B", pe:"38.20", nextEarnings:"10 Dec 2026", divYield:"1.25%", lastDiv:"$0.53",
+    eps:"4.50", range52:"$88 - $185", beta:"1.15", shares:"4.67B",
+    gaugeStatus:"COMPRA FUERTE", gaugeScore:84, techSell:1, techNeutral:3, techBuy:18,
+    analyst:{ rating:"Compra Fuerte", count:30, buy:21, hold:7, sell:2, targetLow:150, targetAvg:200, targetHigh:240 },
+    social:{ score:68, reddit:62, twitter:70, news:74, mentions:6890, trend:14.3,
+      topics:["#AVGO","#AI","#CustomSilicon","#Semis"],
+      posts:[
+        { src:"Reddit", tag:"r/semiconductors", text:"Chips personalizados de Broadcom cada vez más relevantes.", sent:"bull", time:"1h" },
+        { src:"X", tag:"@semis_analyst", text:"Guidance elevado por demanda de red IA, expectativa positiva.", sent:"bull", time:"4h" }
+      ] },
+    earnings:{ quarterly:{ labels:['Q4 25','Q1 26','Q2 26','Q3 26'], real:[1.10,1.15,1.22,1.30], est:[1.05,1.10,1.18,1.25] },
+               annual:{ labels:['2023','2024','2025','2026E'], real:[4.22,4.80,5.50,6.30], est:[4.10,4.65,5.30,6.10] } },
+    financials:{ labels:['2023','2024','2025','2026E'], revenue:[35.8,51.5,62.0,74.0], netIncome:[14.1,13.2,18.5,23.0] },
+    news:[ { title:"Broadcom eleva perspectivas de ingresos por chips personalizados de red IA.", time:"Hace 8h", src:"Reuters" } ], simReturn:0.95 }
+};
+let tChart=null,earnChart=null,finChart=null,tPeriod='ALL',curT='META',earnP='quarterly';
+const $t=id=>document.getElementById(id);
+// ===== CAPA EN VIVO (Stooq, gratis, sin key, CORS abierto) =====
+const STOOQ={VOO:'voo.us',QQQ:'qqq.us',VXUS:'vxus.us',META:'meta.us',AAPL:'aapl.us',NVDA:'nvda.us',PLTR:'pltr.us',SNAP:'snap.us',NFLX:'nflx.us',MSFT:'msft.us',TSLA:'tsla.us',AVGO:'avgo.us'};
+let LIVEQ={},LIVEH={},liveOK=false;
+async function fetchLiveQuotes(){
+ const res=await fetch('https://stooq.com/q/l/?s='+tickers().map(t=>STOOQ[t]).join(',')+'&f=sd2t2ohlcv&h&e=csv');
+ const lines=(await res.text()).trim().split(/\r?\n/).slice(1);
+ LIVEQ={};
+ lines.forEach(l=>{const p=l.split(',');if(!p[0]||p[0]==='Symbol')return;
+  const t=Object.keys(STOOQ).find(k=>STOOQ[k].toUpperCase()===p[0].toUpperCase());
+  if(t&&p[6]&&p[6]!=='N/D'&&!isNaN(+p[6])){const c=+p[6],o=+p[3];LIVEQ[t]={p:c,ch:c-o,pct:o?(c/o-1)*100:0}}});
+ liveOK=Object.keys(LIVEQ).length>0}
+async function fetchLiveHist(t){
+ if(LIVEH[t])return LIVEH[t];
+ const res=await fetch('https://stooq.com/q/d/l/?s='+STOOQ[t]+'&i=d');
+ const lines=(await res.text()).trim().split(/\r?\n/).slice(1);
+ const dates=[],closes=[];
+ lines.forEach(l=>{const p=l.split(',');if(p[0]&&p[4]&&!isNaN(+p[4])){dates.push(p[0]);closes.push(+p[4])}});
+ if(dates.length>30){LIVEH[t]={dates,closes};return LIVEH[t]}return null}
+
+function renderTape(){
+ const items=tickers().map(t=>{const q=LIVEQ[t];let p,ch,up;
+  if(q){p=q.p;ch=q.pct}else{const d=DATA[t],n=d.closes.length;p=d.closes[n-1];ch=(d.closes[n-1]/d.closes[n-2]-1)*100}
+  up=ch>=0;
+  return '<span class="tape-item" onclick="selTicker(\''+t+'\')"><span class="tape-sym">'+t+'</span><span class="tape-price">$'+p.toFixed(2)+'</span><span class="tape-chg '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(ch).toFixed(2)+'%</span></span>'}).join('');
+ $t('tickerTape').innerHTML=items+items}
+function selTicker(t){curT=t;$t('tickerSelect').value=t;renderTerminal(t);
+ if(liveOK&&!LIVEH[t])fetchLiveHist(t).then(()=>{if(curT===t)renderTerminal(t)}).catch(()=>{})}
+function setPeriod(p){tPeriod=p;document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active',b.dataset.p===p));renderTerminal(curT)}
+function setEarnP(p){earnP=p;$t('btn-quarterly').className=p==='quarterly'?'px-2.5 py-1 rounded-md text-cyber-bright bg-cyber-border font-medium':'px-2.5 py-1 rounded-md text-cyber-text hover:text-cyber-bright transition';
+ $t('btn-annual').className=p==='annual'?'px-2.5 py-1 rounded-md text-cyber-bright bg-cyber-border font-medium':'px-2.5 py-1 rounded-md text-cyber-text hover:text-cyber-bright transition';renderTerminal(curT)}
+
+function renderTerminal(t){
+ const live=LIVEH[t],d=live||DATA[t],n=d.dates.length,c=d.closes,q=LIVEQ[t];
+ const last=q?q.p:c[n-1],diff=q?q.ch:last-c[n-2],prev=last-diff,pct=diff/prev*100,up=diff>=0;
+ const lb=$t('liveBadge');
+ if(q){lb.textContent='\u25cf MERCADO EN VIVO';lb.className='text-xs px-2 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30 font-mono'}
+ else{lb.textContent='MODO EXCEL \u00b7 SIN CONEXI\u00d3N';lb.className='text-xs px-2 py-0.5 rounded bg-cyber-border text-cyber-text border border-cyber-border font-mono'}
+ const nm=NAMES[t]||[t,'NASDAQ'];
+ $t('tName').textContent=nm[0];$t('tExchange').textContent=nm[1];
+ $t('tPrice').textContent=usd(last).replace('−','-');
+ const ch=$t('tChange');
+ ch.className='text-sm font-semibold font-mono-val flex items-center justify-end gap-1 '+(up?'text-cyber-green':'text-cyber-red');
+ ch.innerHTML='<i class="fa-solid fa-caret-'+(up?'up':'down')+'"></i> '+(up?'+':'')+diff.toFixed(2)+' ('+(up?'+':'')+pct.toFixed(2)+'%)';
+ // gráfica por período (datos reales)
+ const k=tPeriod==='1M'?Math.min(22,n):tPeriod==='3M'?Math.min(66,n):Math.min(n,756);
+ const labels=d.dates.slice(-k).map(fd),prices=c.slice(-k);
+ const pret=(prices[prices.length-1]/prices[0]-1)*100,pup=pret>=0;
+ const pr=$t('periodReturn');pr.textContent=(pup?'+':'')+pret.toFixed(2)+'% en el tramo';
+ pr.className='text-xs font-mono-val font-semibold '+(pup?'text-cyber-green':'text-cyber-red');
+ const color=pup?'#00ff88':'#ff3366';
+ if(tChart)tChart.destroy();
+ tChart=new Chart($t('priceChart'),{type:'line',data:{labels,datasets:[{label:t,data:prices,borderColor:color,backgroundColor:pup?'rgba(0,255,136,.08)':'rgba(255,51,102,.08)',borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:true,tension:.15}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},
+   plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1322',borderColor:'#1a243a',borderWidth:1,titleColor:'#f8fafc',bodyColor:'#94a3b8',bodyFont:{family:'JetBrains Mono',size:11},callbacks:{label:x=>t+': $'+x.parsed.y.toFixed(2)}}},
+   scales:{x:{grid:{color:'rgba(26,36,58,.3)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:9},maxTicksLimit:6}},y:{grid:{color:'rgba(26,36,58,.3)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:9},callback:v=>'$'+v},position:'right'}}}});
+ // estadísticas REALES del período
+ let peak=c[0],mdd=0,mx=c[0],mn=c[0],rs=[];
+ for(let i=0;i<n;i++){if(c[i]>peak)peak=c[i];const dd=c[i]/peak-1;if(dd<mdd)mdd=dd;if(c[i]>mx)mx=c[i];if(c[i]<mn)mn=c[i];if(i)rs.push(c[i]/c[i-1]-1)}
+ const m=rs.reduce((a,b)=>a+b,0)/rs.length,vol=Math.sqrt(rs.reduce((a,b)=>a+(b-m)*(b-m),0)/rs.length)*100;
+ const totRet=(last/c[0]-1)*100;
+ $t('statVol').textContent=vol.toFixed(2)+'%';
+ $t('statMax').textContent=usd(mx).replace('−','-');$t('statMin').textContent=usd(mn).replace('−','-');
+ $t('statDD').textContent=mdd.toFixed(2)+'%';
+ $t('statPStart').textContent=usd(c[0]).replace('−','-');
+ $t('statPMax').textContent=usd(mx).replace('−','-');$t('statPMin').textContent=usd(mn).replace('−','-');
+ $t('statRet').textContent=(totRet>=0?'+':'')+totRet.toFixed(2)+'%';
+ $t('statRet').className='text-cyber-bright font-mono-val font-medium '+(totRet>=0?'text-cyber-green':'text-cyber-red');
+ $t('statDays').textContent=n+' cierres';
+ $t('statLastDate').textContent=fd(d.dates[n-1])+' '+d.dates[n-1].slice(0,4);
+ // gauge técnico REAL (medias móviles sobre tus datos)
+ const ma=k2=>{let s=0;for(let i=n-k2;i<n;i++)s+=c[i];return s/k2};
+ const ma20=ma(Math.min(20,n)),ma50=ma(Math.min(50,n)),mom20=last/c[n-Math.min(20,n)]-1;
+ let score=50+(last>ma20?15:-15)+(last>ma50?15:-15)+(ma20>ma50?10:-10)+(mom20>0?10:-10);
+ score=Math.max(5,Math.min(95,score));
+ const st=score>=70?'COMPRA FUERTE':score>=55?'COMPRA':score>=45?'NEUTRO':score>=30?'VENTA':'VENTA FUERTE';
+ const path=$t('gaugePath');path.style.strokeDashoffset=126-(126*(score/100));
+ path.style.stroke=score>=70?'#00ff88':score>=45?'#00e5ff':'#ff3366';
+ const gt=$t('gaugeValueText');gt.textContent=st;
+ gt.className='absolute bottom-0 left-1/2 transform -translate-x-1/2 font-bold font-mono-val text-xs '+(score>=70?'text-cyber-green':score>=45?'text-cyber-cyan':'text-cyber-red');
+ const buy=Math.round(score/100*18);$t('techBuyCount').textContent=buy;
+ $t('techSellCount').textContent=Math.round((100-score)/100*18);
+ $t('techNeutralCount').textContent=Math.max(0,18-buy-Math.round((100-score)/100*18));
+ // paneles DEMO (conexión a APIs después)
+ try{
+  const dm=DEMO[t]||DEMO.META;
+  if(earnChart)earnChart.destroy();
+  const ed=dm.earnings[earnP];
+  earnChart=new Chart($t('earningsChart'),{type:'bar',data:{labels:ed.labels,datasets:[{label:'Real',data:ed.real,backgroundColor:'#00ff88',borderRadius:4,barPercentage:.4},{label:'Est.',data:ed.est,backgroundColor:'#00e5ff',borderRadius:4,barPercentage:.4}]},
+   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8294ad',font:{family:'JetBrains Mono',size:10}}}},scales:{x:{grid:{color:'rgba(26,36,58,.4)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:10}}},y:{grid:{color:'rgba(26,36,58,.4)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:10}}}}}});
+  if(finChart)finChart.destroy();
+  finChart=new Chart($t('financialsChart'),{type:'line',data:{labels:dm.financials.labels,datasets:[{label:'Ingresos ($B)',data:dm.financials.revenue,borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,.08)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#00e5ff'},{label:'Beneficio Neto ($B)',data:dm.financials.netIncome,borderColor:'#00ff88',backgroundColor:'rgba(0,255,136,.08)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#00ff88'}]},
+   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8294ad',font:{size:11}}}},scales:{x:{grid:{color:'rgba(26,36,58,.4)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:10}}},y:{grid:{color:'rgba(26,36,58,.4)'},ticks:{color:'#8294ad',font:{family:'JetBrains Mono',size:10}}}}}});
+  // noticias
+  const nc=$t('newsContainer');nc.innerHTML='';
+  dm.news.forEach(item=>{const card=document.createElement('div');card.className='bg-cyber-bg p-3 rounded-lg border border-cyber-border hover:border-cyber-green/40 transition cursor-pointer';
+   card.innerHTML='<h4 class="text-xs font-semibold text-cyber-bright hover:text-cyber-green transition leading-snug">'+item.title+'</h4><span class="text-[10px] text-cyber-text block mt-1.5 font-mono">'+item.time+' · '+item.src+'</span>';nc.appendChild(card)});
+  // sentimiento social
+  const s=dm.social;
+  $t('socialScore').textContent=s.score;
+  $t('socialScore').className='text-3xl font-bold font-mono-val '+(s.score>=65?'text-cyber-green':s.score>=45?'text-cyber-cyan':'text-cyber-red');
+  const sl=s.score>=80?'Muy Alcista':s.score>=65?'Alcista':s.score>=45?'Neutral':s.score>=30?'Bajista':'Muy Bajista';
+  $t('socialLabel').textContent=sl;
+  $t('mentions24h').textContent=s.mentions.toLocaleString();
+  const tr=$t('mentionsTrend');tr.textContent=(s.trend>=0?'▲ +':'▼ ')+s.trend.toFixed(1)+'%';tr.className='text-[10px] font-mono-val '+(s.trend>=0?'text-cyber-green':'text-cyber-red');
+  [['Reddit',s.reddit],['X / Twitter',s.twitter],['Noticias',s.news]].forEach((row,i)=>{
+   const sc=$t('score'+i);if(sc)sc.textContent=row[1];
+   const bar=$t('bar'+i);if(bar){bar.style.width=row[1]+'%';bar.className='sent-bar-fill '+(row[1]>=65?'bg-cyber-green':row[1]>=45?'bg-cyber-cyan':'bg-cyber-red')}});
+  $t('topTopics').innerHTML=s.topics.map(x=>'<span class="text-[10px] px-2 py-0.5 rounded-full bg-cyber-bg border border-cyber-border text-cyber-text font-mono">'+x+'</span>').join('');
+  $t('socialPosts').innerHTML=s.posts.map(p=>{const badge=p.sent==='bull'?'bull':p.sent==='bear'?'bear':'neut';
+   const lt=p.sent==='bull'?'Alcista':p.sent==='bear'?'Bajista':'Neutro';
+   return '<div class="bg-cyber-bg p-2 rounded-lg border border-cyber-border/60"><div class="flex items-center justify-between gap-1 mb-1"><span class="text-[10px] text-cyber-text font-mono">'+p.src+' · '+p.tag+'</span><span class="sbadge '+badge+'">'+lt+'</span></div><p class="text-[11px] text-cyber-bright leading-snug">'+p.text+'</p><span class="text-[9px] text-cyber-text font-mono">'+p.time+'</span></div>'}).join('');
+  // analistas
+  const a=dm.analyst,cp=last;
+  const upside=(a.targetAvg-cp)/cp*100;
+  $t('analystRating').textContent=a.rating;
+  $t('analystRating').className='text-lg font-bold '+(a.rating.includes('Fuerte')?'text-cyber-green':a.rating==='Mantener'?'text-cyber-cyan':'text-cyber-red');
+  $t('analystCount').textContent='Basado en '+a.count+' analistas';
+  $t('analystUpside').textContent=(upside>=0?'+':'')+upside.toFixed(1)+'%';
+  $t('analystUpside').className='text-lg font-bold font-mono-val '+(upside>=0?'text-cyber-green':'text-cyber-red');
+  const tot2=a.buy+a.hold+a.sell;
+  $t('distBuy').style.width=(a.buy/tot2*100)+'%';$t('distHold').style.width=(a.hold/tot2*100)+'%';$t('distSell').style.width=(a.sell/tot2*100)+'%';
+  $t('countBuy').textContent=a.buy;$t('countHold').textContent=a.hold;$t('countSell').textContent=a.sell;
+  $t('targetLow').textContent='$'+a.targetLow;$t('targetAvg').textContent='$'+a.targetAvg;$t('targetHigh').textContent='$'+a.targetHigh;
+  $t('targetCurrent').textContent=usd(cp).replace('−','-');
+  const pos=Math.max(0,Math.min(100,(cp-a.targetLow)/(a.targetHigh-a.targetLow)*100));
+  $t('currentMarker').style.left=pos+'%';
+ }catch(_){}
+}
+renderTape();fillStart();fillBench();renderAssetRows();render();renderTerminal('META');
+fetchLiveQuotes().then(()=>{renderTape();renderTerminal(curT);return liveOK?fetchLiveHist(curT):null})
+ .then(()=>{if(liveOK)renderTerminal(curT)}).catch(()=>{});
+</script>
+
+</body>
+</html>
